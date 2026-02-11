@@ -40,7 +40,8 @@ public class AuthController {
     @PostMapping("/signup")
     public String signup(@RequestBody User user) {
         if (!user.getEmail()
-                .endsWith("@galgotiasuniversity.edu.in")) {
+                .endsWith("@galgotiasuniversity.edu.in") || !user.getEmail()
+                .endsWith("@galgotiasuniversity.ac.in")) {
 
             throw new RuntimeException(
                     "Only Galgotias University emails allowed"
