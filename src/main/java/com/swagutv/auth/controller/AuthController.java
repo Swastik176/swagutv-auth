@@ -8,11 +8,14 @@ import com.swagutv.auth.exception.InvalidCredentialsException;
 import com.swagutv.auth.exception.UserAlreadyExistException;
 import com.swagutv.auth.repo.UserRepo;
 import com.swagutv.auth.service.OtpService;
+import com.swagutv.auth.service.AuthService;
 import com.swagutv.auth.util.JwtUtil;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.Map;
 import java.util.Optional;
 
 @RestController
@@ -30,6 +33,9 @@ public class AuthController {
 
     @Autowired
     OtpService otpService;
+
+    @Autowired
+    AuthService authService;
 
     @PostMapping("/signup")
     public String signup(@RequestBody User user) {
@@ -127,17 +133,20 @@ public class AuthController {
         return "Email verified";
     }
 
+    @PostMapping("/resend-otp")
+    public ResponseEntity<?> resendOtp(@RequestBody Map<String, String> body) {
+        String email = body.get("email");
+        authService.resendOtp(email);
+        return ResponseEntity.ok().build();
+    }
     @PostMapping("/validate-token")
-    public Boolean validateToken(@RequestHeader("Authorization") String token){
-        try{
+    public Boolean validateToken(@RequestHeader("Authorization") String token) {
+        try {
             jwtUtil.extractEmail(token.replace("Bearer ", ""));
             return true;
-        }
-        catch(Exception e){
+        } catch (Exception e) {
             return false;
         }
     }
-
-
 }
 

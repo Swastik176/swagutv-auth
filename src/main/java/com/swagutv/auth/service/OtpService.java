@@ -27,6 +27,8 @@ public class OtpService {
                                 .nextInt(900000) + 100000
                 );
 
+        otpRepo.deleteByEmail(email);
+
         OtpVerification otpEntity =
                 new OtpVerification();
 
@@ -36,7 +38,6 @@ public class OtpService {
                 LocalDateTime.now().plusMinutes(5)
         );
 
-        otpRepo.deleteByEmail(email);
         otpRepo.save(otpEntity);
 
         emailService.sendOtpEmail(email, otp);
