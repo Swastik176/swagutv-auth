@@ -30,6 +30,11 @@ public class GlobalExceptionHandler {
         return buildError(HttpStatus.FORBIDDEN, ex.getMessage());
     }
 
+    @ExceptionHandler(EmailNotSentException.class)
+    public ResponseEntity<ApiError> handleNotSent(EmailNotSentException ex){
+        return buildError(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage());
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiError> handleGeneral(Exception ex){
         return buildError(HttpStatus.INTERNAL_SERVER_ERROR, "Something went Wrong!!");
