@@ -44,7 +44,7 @@ public class AuthController {
                 .endsWith("@galgotiasuniversity.ac.in")) {
 
             throw new RuntimeException(
-                    "Only Galgotias University emails allowed"
+                    "Only Galgotias University emails allowed!!"
             );
         }
 
