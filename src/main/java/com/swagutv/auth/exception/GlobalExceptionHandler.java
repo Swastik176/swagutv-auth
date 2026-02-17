@@ -35,6 +35,11 @@ public class GlobalExceptionHandler {
         return buildError(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage());
     }
 
+    @ExceptionHandler(UserNotExistException.class)
+    public ResponseEntity<ApiError> handleNotExist(UserNotExistException ex){
+        return buildError(HttpStatus.NOT_FOUND, ex.getMessage());
+    }
+
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiError> handleGeneral(Exception ex){
         return buildError(HttpStatus.INTERNAL_SERVER_ERROR, "Something went Wrong!!");

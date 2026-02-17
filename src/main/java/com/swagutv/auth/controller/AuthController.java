@@ -6,6 +6,7 @@ import com.swagutv.auth.entity.User;
 import com.swagutv.auth.exception.EmailNotVerifiedException;
 import com.swagutv.auth.exception.InvalidCredentialsException;
 import com.swagutv.auth.exception.UserAlreadyExistException;
+import com.swagutv.auth.exception.UserNotExistException;
 import com.swagutv.auth.repo.UserRepo;
 import com.swagutv.auth.service.OtpService;
 import com.swagutv.auth.service.AuthService;
@@ -38,7 +39,9 @@ public class AuthController {
     AuthService authService;
 
     @PostMapping("/signup")
-    public String signup(@RequestBody User user) {
+    public String signup(
+            @RequestBody User user
+    ) {
         if (!user.getEmail()
                 .endsWith("@galgotiasuniversity.edu.in") && !user.getEmail()
                 .endsWith("@galgotiasuniversity.ac.in")) {
@@ -82,7 +85,9 @@ public class AuthController {
     }
 
     @PostMapping("/login")
-    public String login(@RequestBody LoginRequest req) {
+    public String login(
+            @RequestBody LoginRequest req
+    ) {
 
         User user = userRepo
                 .findByEmail(req.getEmail())
@@ -105,6 +110,51 @@ public class AuthController {
                 user.getEmail(),
                 user.getRole()
         );
+    }
+
+    @PostMapping("/forgot-password")
+    public String forgotPassword(@RequestParam String email) {
+        if (email
+                .endsWith("@galgotiasuniversity.edu.in") && email
+                .endsWith("@galgotiasuniversity.ac.in")) {
+
+            throw new RuntimeException(
+                    "Only Galgotias University emails allowed!!"
+            );
+        }
+
+        Optional<User> existing =
+                userRepo.findByEmail(email);
+
+        if (!existing.isPresent()) {
+            throw new UserNotExistException("No account found with this Email, Please SignUp!!");
+        }
+
+        User dbUser = existing.get();
+
+        // user exists but not verified → resend OTP
+        otpService.generateAndSendOtp(dbUser.getEmail());
+
+        return "OTP resent to email";
+    }
+
+    @PostMapping("/reset-password")
+    public String resetPassword(@RequestBody LoginRequest request){
+        Optional<User> existing =
+                userRepo.findByEmail(request.getEmail());
+
+        if (!existing.isPresent()) {
+            throw new UserNotExistException("No account found with this Email, Please SignUp!!");
+        }
+
+        User dbUser = existing.get();
+
+        dbUser.setPassword(
+                encoder.encode(request.getPassword())
+        );
+        userRepo.save(dbUser);
+
+        return "Password Reset Successfully!!";
     }
 
     @GetMapping("/profile")
@@ -135,13 +185,18 @@ public class AuthController {
     }
 
     @PostMapping("/resend-otp")
-    public ResponseEntity<?> resendOtp(@RequestBody Map<String, String> body) {
+    public ResponseEntity<?> resendOtp(
+            @RequestBody Map<String, String> body
+    ) {
         String email = body.get("email");
         authService.resendOtp(email);
         return ResponseEntity.ok().build();
     }
+
     @PostMapping("/validate-token")
-    public Boolean validateToken(@RequestHeader("Authorization") String token) {
+    public Boolean validateToken(
+            @RequestHeader("Authorization") String token
+    ) {
         try {
             jwtUtil.extractEmail(token.replace("Bearer ", ""));
             return true;
