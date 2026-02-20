@@ -91,7 +91,9 @@ public class AuthController {
 
         User user = userRepo
                 .findByEmail(req.getEmail())
-                .orElseThrow();
+                .orElseThrow(
+                        () -> new UserNotExistException("No account found with this Email, Please SignUp!!")
+                );
 
         if (!user.isVerified()) {
             throw new EmailNotVerifiedException(
@@ -176,7 +178,9 @@ public class AuthController {
 
         User user =
                 userRepo.findByEmail(email)
-                        .orElseThrow();
+                        .orElseThrow(
+                                () -> new UserNotExistException("No account found with this Email, Please SignUp!!")
+                        );
 
         user.setVerified(true);
         userRepo.save(user);

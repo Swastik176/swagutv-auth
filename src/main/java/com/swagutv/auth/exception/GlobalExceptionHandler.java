@@ -42,7 +42,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiError> handleGeneral(Exception ex){
-        return buildError(HttpStatus.INTERNAL_SERVER_ERROR, "Something went Wrong!!");
+        return buildError(HttpStatus.INTERNAL_SERVER_ERROR, ex.getMessage());
     }
 
     private ResponseEntity<ApiError> buildError(HttpStatus status, String message){
