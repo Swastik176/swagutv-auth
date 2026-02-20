@@ -4,7 +4,6 @@ import com.swagutv.auth.entity.Block;
 import com.swagutv.auth.entity.User;
 import com.swagutv.auth.repo.BlockRepo;
 import com.swagutv.auth.repo.UserRepo;
-import org.apache.tomcat.util.net.openssl.ciphers.Authentication;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
